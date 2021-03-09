@@ -10,7 +10,7 @@ namespace Barotrauma_Debug_Console
             while (true)
             {
                 Console.Write("> ");
-                string input = Console.ReadLine();
+                string input = ConsoleExtensions.ReadInput();
                 handler.Handle(input ?? "");
             }
         }
