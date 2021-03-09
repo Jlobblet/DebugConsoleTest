@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Barotrauma-Debug-Console", "Barotrauma-Debug-Console\Barotrauma-Debug-Console.csproj", "{208B0BEC-C6DB-49F3-A865-F793FB23FD82}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{208B0BEC-C6DB-49F3-A865-F793FB23FD82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{208B0BEC-C6DB-49F3-A865-F793FB23FD82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{208B0BEC-C6DB-49F3-A865-F793FB23FD82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{208B0BEC-C6DB-49F3-A865-F793FB23FD82}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
