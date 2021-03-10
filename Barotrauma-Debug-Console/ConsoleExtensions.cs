@@ -78,43 +78,38 @@ namespace Barotrauma_Debug_Console
                         break;
                 }
 
-                ForwardBackspace(Math.Max(0, lengthToClear - 1));
+                ForwardBackspace(Math.Max(0, lengthToClear));
                 lengthToClear = 0;
-
-                if (!string.IsNullOrEmpty(input) && !input.Contains(' '))
+                
+                if (string.IsNullOrEmpty(input)) continue;
+                if (!input.Contains(' '))
                 {
-                    if (LookupCommand(input, out string output))
-                    {
-                        ConsoleColor original = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.Write(output[input.Length..]);
-                        Console.Write(new string('\b', output.Length - input.Length));
-                        Console.ForegroundColor = original;
-                        lengthToClear += output.Length - input.Length;
-                    }
+                    if (!LookupCommand(input, out string output)) continue;
+                    ConsoleColor original = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write(output[input.Length..]);
+                    Console.Write(new string('\b', output.Length - input.Length));
+                    Console.ForegroundColor = original;
+                    lengthToClear += output.Length - input.Length;
                 }
-                else if (!string.IsNullOrEmpty(input))
+                else
                 {
                     string[] split = CommandHandler.SplitCommand(input);
-                    if (Program.Handler.TryFindCommand(split[0], out Command command))
-                    {
-                        int index = split.Length - 2;
-                        if (index >= 0 && index < command.ParameterTypes.Length)
-                        {
-                            Type currentType = command.ParameterTypes[split.Length - 2];
-                            if (Completers.TryGetCompleter(currentType, out ICompleter c))
-                                if (c.TryComplete(split[^1], out string completion))
-                                {
-                                    string rest = completion[split[^1].Length..];
-                                    ConsoleColor original = Console.ForegroundColor;
-                                    Console.ForegroundColor = ConsoleColor.Cyan;
-                                    Console.Write(rest);
-                                    Console.Write(new string('\b', rest.Length));
-                                    Console.ForegroundColor = original;
-                                    lengthToClear += rest.Length;
-                                }
-                        }
-                    }
+                    if (!Program.Handler.TryFindCommand(split[0], out Command command)) continue;
+                    int index = split.Length - 2;
+                    if (index < 0 || index >= command.ParameterTypes.Length) continue;
+                    
+                    Type currentType = command.ParameterTypes[split.Length - 2];
+                    if (!Completers.TryGetCompleter(currentType, out ICompleter c)) continue;
+                    if (!c.TryComplete(split[^1], out string completion)) continue;
+                    
+                    string rest = completion[split[^1].Length..];
+                    ConsoleColor original = Console.ForegroundColor;
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.Write(rest);
+                    Console.Write(new string('\b', rest.Length));
+                    Console.ForegroundColor = original;
+                    lengthToClear += rest.Length;
                 }
             } while (key.Key != ConsoleKey.Enter);
 
