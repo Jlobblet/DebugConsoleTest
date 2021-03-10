@@ -1,4 +1,6 @@
 using System;
+using Barotrauma_Debug_Console.TabCompletion;
+
 // ReSharper disable UnusedMember.Global
 
 namespace Barotrauma_Debug_Console
@@ -51,6 +53,25 @@ namespace Barotrauma_Debug_Console
         public static void MaybeDouble(int i, bool d = false)
         {
             Console.WriteLine(i * (d ? 2 : 1));
+        }
+
+        public enum BarotraumaDeveloper
+        {
+            Hex,
+            Juan,
+            Regalis,
+        }
+
+        [Command]
+        public static void BaroDev(BarotraumaDeveloper dev)
+        {
+            Console.WriteLine($"Hi {dev}!");
+        }
+
+        [Command]
+        public static void BallastFlora([CustomCompleter(typeof(BallastFloraCompleter))] string species)
+        {
+            Console.WriteLine($"That ballast flora species is also known as {species}.");
         }
     }
 }
