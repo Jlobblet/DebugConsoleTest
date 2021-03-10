@@ -26,6 +26,7 @@ namespace Barotrauma_Debug_Console
 
         public CommandAttribute(string name, params string[] aliases)
         {
+            Name = name;
             Aliases = aliases;
         }
     }

@@ -5,7 +5,7 @@ namespace Barotrauma_Debug_Console
 {
     public static class Commands
     {
-        [Command]
+        [Command(aliases: "quit")]
         public static void Exit()
         {
             Environment.Exit(0);

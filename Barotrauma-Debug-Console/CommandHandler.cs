@@ -29,7 +29,7 @@ namespace Barotrauma_Debug_Console
         /// </summary>
         /// <param name="command">The input string to split into parts</param>
         /// <returns>Array of string split on spaces, except when in speech marks</returns>
-        private static string[] SplitCommand(string command)
+        public static string[] SplitCommand(string command)
         {
             command = command.Trim();
             List<string> commands = new();
