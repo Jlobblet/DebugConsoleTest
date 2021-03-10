@@ -80,7 +80,7 @@ namespace Barotrauma_Debug_Console
 
                 ForwardBackspace(Math.Max(0, lengthToClear));
                 lengthToClear = 0;
-                
+
                 if (string.IsNullOrEmpty(input)) continue;
                 if (!input.Contains(' '))
                 {
@@ -98,11 +98,11 @@ namespace Barotrauma_Debug_Console
                     if (!Program.Handler.TryFindCommand(split[0], out Command command)) continue;
                     int index = split.Length - 2;
                     if (index < 0 || index >= command.ParameterTypes.Length) continue;
-                    
+
                     Type currentType = command.ParameterTypes[split.Length - 2];
                     if (!Completers.TryGetCompleter(currentType, out ICompleter c)) continue;
                     if (!c.TryComplete(split[^1], out string completion)) continue;
-                    
+
                     string rest = completion[split[^1].Length..];
                     ConsoleColor original = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -136,10 +136,10 @@ namespace Barotrauma_Debug_Console
             {
                 output = command.Name.StartsWith(input, StringComparison.InvariantCultureIgnoreCase)
                              ? command.Name
-                             : command.Aliases.First(a => a.StartsWith(input,
-                                                                       StringComparison
-                                                                           .InvariantCultureIgnoreCase))!;
-                return true;
+                             : command.Aliases.FirstOrDefault(a => a.StartsWith(input,
+                                                                                    StringComparison
+                                                                                        .InvariantCultureIgnoreCase))!;
+                return output is not null;
             }
 
             output = "";
