@@ -6,9 +6,9 @@ namespace Barotrauma_Debug_Console
     public static class Commands
     {
         [Command(aliases: "quit")]
-        public static void Exit()
+        public static void Exit(int exitCode = 0)
         {
-            Environment.Exit(0);
+            Environment.Exit(exitCode);
         }
         
         [Command]
