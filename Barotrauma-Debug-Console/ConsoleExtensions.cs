@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Linq;
+using System.Reflection;
 using Barotrauma_Debug_Console.TabCompletion;
 
 namespace Barotrauma_Debug_Console
@@ -15,6 +16,7 @@ namespace Barotrauma_Debug_Console
             do
             {
                 key = Console.ReadKey(true);
+                // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
                 switch (key.Key)
                 {
                     case ConsoleKey.Backspace when (key.Modifiers & ConsoleModifiers.Control) != 0 ||
@@ -58,14 +60,7 @@ namespace Barotrauma_Debug_Console
                         else
                         {
                             // We need to find the next argument
-                            string[] split = CommandHandler.SplitCommand(input);
-                            if (!Program.Handler.TryFindCommand(split[0], out Command command)) break;
-
-                            Type currentType = command.ParameterTypes[split.Length - 2];
-                            if (!Completers.TryGetCompleter(currentType, out ICompleter c)) break;
-                            if (!c.TryComplete(split[^1], out string completion)) break;
-
-                            string rest = completion[split[^1].Length..];
+                            if (!TryGetRestOfParameter(input, out string rest)) break;
                             input += rest;
                             Console.Write(rest);
                         }
@@ -93,16 +88,7 @@ namespace Barotrauma_Debug_Console
                 }
                 else
                 {
-                    string[] split = CommandHandler.SplitCommand(input);
-                    if (!Program.Handler.TryFindCommand(split[0], out Command command)) continue;
-                    int index = split.Length - 2;
-                    if (index < 0 || index >= command.ParameterTypes.Length) continue;
-
-                    Type currentType = command.ParameterTypes[split.Length - 2];
-                    if (!Completers.TryGetCompleter(currentType, out ICompleter c)) continue;
-                    if (!c.TryComplete(split[^1], out string completion)) continue;
-
-                    string rest = completion[split[^1].Length..];
+                    if (!TryGetRestOfParameter(input, out string rest)) continue;
                     ConsoleColor original = Console.ForegroundColor;
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.Write(rest);
@@ -114,6 +100,34 @@ namespace Barotrauma_Debug_Console
 
             Console.WriteLine("");
             return input;
+        }
+
+        private static bool TryGetRestOfParameter(string input, out string rest)
+        {
+            rest = "";
+            string[] split = CommandHandler.SplitCommand(input);
+            if (!Program.Handler.TryFindCommand(split[0], out Command command)) return false;
+            int index = split.Length - 2;
+            if (index < 0 || index >= command.ParameterInfos.Length) return false;
+
+            ParameterInfo parameterInfo = command.ParameterInfos[split.Length - 2];
+
+            string completion;
+            var customAttribute =
+                (CustomCompleterAttribute?) parameterInfo.GetCustomAttribute(typeof(CustomCompleterAttribute));
+            if (customAttribute is null)
+            {
+                Type currentType = parameterInfo.ParameterType;
+                if (!Completers.TryGetCompleter(currentType, out ICompleter c)) return false;
+                if (!c.TryComplete(split[^1], out completion)) return false;
+            }
+            else
+            {
+                if (!customAttribute.Completer.TryComplete(split[^1], out completion)) return false;
+            }
+
+            rest = completion[split[^1].Length..];
+            return true;
         }
 
         public static void Backspace(int n = 1)
