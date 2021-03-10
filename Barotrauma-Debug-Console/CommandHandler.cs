@@ -90,17 +90,17 @@ namespace Barotrauma_Debug_Console
         public bool TryFindCommand(string name, out Command output)
         {
             output = Commands.Find(c => c.Name.Equals(name,
-                                                      StringComparison.InvariantCultureIgnoreCase)) ??
+                                                      StringComparison.OrdinalIgnoreCase)) ??
                      Commands.Find(c => c.Aliases.Any(n => n.Equals(name,
                                                                     StringComparison
-                                                                        .InvariantCultureIgnoreCase)))!;
+                                                                        .OrdinalIgnoreCase)))!;
             return output is not null!;
         }
 
         public bool SearchCommand(string search, out Command output)
         {
-            output = Commands.Find(c => c.Name.StartsWith(search, StringComparison.InvariantCultureIgnoreCase)) ??
-                     Commands.Find(c => c.Aliases.Any(n => n.StartsWith(search, StringComparison.InvariantCultureIgnoreCase)))!;
+            output = Commands.Find(c => c.Name.StartsWith(search, StringComparison.OrdinalIgnoreCase)) ??
+                     Commands.Find(c => c.Aliases.Any(n => n.StartsWith(search, StringComparison.OrdinalIgnoreCase)))!;
             return output is not null!;
         }
     }

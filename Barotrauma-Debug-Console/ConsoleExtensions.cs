@@ -133,11 +133,11 @@ namespace Barotrauma_Debug_Console
         {
             if (Program.Handler.SearchCommand(input, out Command command))
             {
-                output = command.Name.StartsWith(input, StringComparison.InvariantCultureIgnoreCase)
+                output = command.Name.StartsWith(input, StringComparison.OrdinalIgnoreCase)
                              ? command.Name
                              : command.Aliases.FirstOrDefault(a => a.StartsWith(input,
                                                                                     StringComparison
-                                                                                        .InvariantCultureIgnoreCase))!;
+                                                                                        .OrdinalIgnoreCase))!;
                 return output is not null;
             }
 

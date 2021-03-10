@@ -13,7 +13,7 @@ namespace Barotrauma_Debug_Console.TabCompletion
 
         public bool TryComplete(string input, out string output)
         {
-            output = names.FirstOrDefault(n => n.StartsWith(input, StringComparison.InvariantCultureIgnoreCase));
+            output = names.FirstOrDefault(n => n.StartsWith(input, StringComparison.OrdinalIgnoreCase));
             return output is not null;
         }
     }
