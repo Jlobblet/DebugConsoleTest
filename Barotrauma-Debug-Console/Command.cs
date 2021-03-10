@@ -9,12 +9,14 @@ namespace Barotrauma_Debug_Console
         private readonly MethodInfo info;
         public readonly string Name;
         public readonly string[] Aliases;
+        public readonly Type[] ParameterTypes;
 
         public Command(MethodInfo info, CommandAttribute attr)
         {
             Name = attr.Name ?? info.Name;
             Aliases = attr.Aliases;
             this.info = info;
+            ParameterTypes = info.GetParameters().Select(p => p.ParameterType).ToArray();
         }
 
         public bool TryRun(params string[] parameters)

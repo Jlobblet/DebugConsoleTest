@@ -1,6 +1,7 @@
 #nullable enable
 using System;
 using System.Linq;
+using Barotrauma_Debug_Console.TabCompletion;
 
 namespace Barotrauma_Debug_Console
 {
@@ -56,7 +57,18 @@ namespace Barotrauma_Debug_Console
                         }
                         else if (!string.IsNullOrEmpty(input))
                         {
-                            string[]? split = CommandHandler.SplitCommand(input);
+                            string[] split = CommandHandler.SplitCommand(input);
+                            if (Program.Handler.TryFindCommand(split[0], out Command command))
+                            {
+                                Type currentType = command.ParameterTypes[split.Length - 2];
+                                if (Completers.TryGetCompleter(currentType, out ICompleter c))
+                                    if (c.TryComplete(split[^1], out string completion))
+                                    {
+                                        string rest = completion[split[^1].Length..];
+                                        input += rest;
+                                        Console.Write(rest);
+                                    }
+                            }
                         }
 
                         break;
@@ -70,6 +82,7 @@ namespace Barotrauma_Debug_Console
                 lengthToClear = 0;
 
                 if (!string.IsNullOrEmpty(input) && !input.Contains(' '))
+                {
                     if (LookupCommand(input, out string output))
                     {
                         ConsoleColor original = Console.ForegroundColor;
@@ -77,8 +90,32 @@ namespace Barotrauma_Debug_Console
                         Console.Write(output[input.Length..]);
                         Console.Write(new string('\b', output.Length - input.Length));
                         Console.ForegroundColor = original;
-                        lengthToClear = output.Length - input.Length;
+                        lengthToClear += output.Length - input.Length;
                     }
+                }
+                else if (!string.IsNullOrEmpty(input))
+                {
+                    string[] split = CommandHandler.SplitCommand(input);
+                    if (Program.Handler.TryFindCommand(split[0], out Command command))
+                    {
+                        int index = split.Length - 2;
+                        if (index >= 0 && index < command.ParameterTypes.Length)
+                        {
+                            Type currentType = command.ParameterTypes[split.Length - 2];
+                            if (Completers.TryGetCompleter(currentType, out ICompleter c))
+                                if (c.TryComplete(split[^1], out string completion))
+                                {
+                                    string rest = completion[split[^1].Length..];
+                                    ConsoleColor original = Console.ForegroundColor;
+                                    Console.ForegroundColor = ConsoleColor.Cyan;
+                                    Console.Write(rest);
+                                    Console.Write(new string('\b', rest.Length));
+                                    Console.ForegroundColor = original;
+                                    lengthToClear += rest.Length;
+                                }
+                        }
+                    }
+                }
             } while (key.Key != ConsoleKey.Enter);
 
             Console.WriteLine("");
