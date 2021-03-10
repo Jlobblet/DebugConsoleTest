@@ -9,14 +9,29 @@ namespace Barotrauma_Debug_Console
 {
     public static class Commands
     {
+        public enum BarotraumaDeveloper
+        {
+            Hex,
+            Juan,
+            Regalis
+        }
+
+        public enum MyEnum
+        {
+            One,
+            Two
+        }
+
         [Command]
         [Help("Display information about all commands")]
-        public static void Help([CustomCompleter(typeof(HelpCompleter))] [Help("The name of a command to retrieve help on")] string command = "")
+        public static void Help(
+            [CustomCompleter(typeof(HelpCompleter))] [Help("The name of a command to retrieve help on")]
+            string command = "")
         {
             if (string.IsNullOrEmpty(command))
             {
                 IEnumerable<string> commands = Program.Handler.Commands.Select(c => c.BriefHelpString);
-                Console.WriteLine(string.Join('\n', commands));    
+                Console.WriteLine(string.Join('\n', commands));
             }
             else
             {
@@ -25,14 +40,14 @@ namespace Barotrauma_Debug_Console
                 Console.WriteLine(com.HelpString);
             }
         }
-        
+
         [Command(aliases: "quit")]
         [Help("Exit the program with the specified exit code")]
         public static void Exit([Help("The exit code to exit with")] int exitCode = 0)
         {
             Environment.Exit(exitCode);
         }
-        
+
         [Command]
         public static void Foobar(string input)
         {
@@ -49,12 +64,6 @@ namespace Barotrauma_Debug_Console
         public static void Add(int a, int b)
         {
             Console.WriteLine(a + b);
-        }
-
-        public enum MyEnum
-        {
-            One,
-            Two,
         }
 
         [Command]
@@ -75,13 +84,6 @@ namespace Barotrauma_Debug_Console
             Console.WriteLine(i * (d ? 2 : 1));
         }
 
-        public enum BarotraumaDeveloper
-        {
-            Hex,
-            Juan,
-            Regalis,
-        }
-
         [Command]
         public static void BaroDev(BarotraumaDeveloper dev)
         {
@@ -89,7 +91,8 @@ namespace Barotrauma_Debug_Console
         }
 
         [Command]
-        public static void BallastFlora([CustomCompleter(typeof(BallastFloraCompleter))] string species)
+        public static void BallastFlora([CustomCompleter(typeof(BallastFloraCompleter))]
+                                        string species)
         {
             Console.WriteLine($"That ballast flora species is also known as {species}.");
         }

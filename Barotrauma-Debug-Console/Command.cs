@@ -8,10 +8,13 @@ namespace Barotrauma_Debug_Console
 {
     public class Command
     {
+        public readonly string[] Aliases;
         private readonly MethodInfo info;
         public readonly string Name;
-        public readonly string[] Aliases;
         public readonly ParameterInfo[] ParameterInfos;
+
+        public string BriefHelpString;
+        public string HelpString;
 
         public Command(MethodInfo info, CommandAttribute attr)
         {
@@ -29,19 +32,13 @@ namespace Barotrauma_Debug_Console
                 briefHelp.Append($" {openingBracket}{parameterInfo.Name}{closingBracket}");
                 var helpAttribute = (HelpAttribute?) parameterInfo.GetCustomAttribute(typeof(HelpAttribute));
                 string paramDescription = "no help provided";
-                if (helpAttribute is not null)
-                {
-                    paramDescription = helpAttribute.Description;
-                }
+                if (helpAttribute is not null) paramDescription = helpAttribute.Description;
                 help.AppendLine($"{parameterInfo.ParameterType.Name} {parameterInfo.Name}: {paramDescription}");
             }
 
             BriefHelpString = briefHelp.ToString();
             HelpString = help.ToString();
         }
-
-        public string BriefHelpString;
-        public string HelpString;
 
         public bool TryRun(params string[] parameters)
         {
@@ -73,7 +70,7 @@ namespace Barotrauma_Debug_Console
                 {
                     Console.WriteLine($"Could not find parser for {param.ParameterType}");
                     return false;
-                } 
+                }
 
                 if (!parser.TryParse(input, out object output))
                 {
@@ -85,10 +82,7 @@ namespace Barotrauma_Debug_Console
             }
 
             // Optional parameters
-            for (; i < methodParameters.Length; i++)
-            {
-                objects[i] = methodParameters[i].DefaultValue;
-            }
+            for (; i < methodParameters.Length; i++) objects[i] = methodParameters[i].DefaultValue;
 
             info.Invoke(null, objects);
 

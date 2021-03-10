@@ -8,24 +8,22 @@ namespace Barotrauma_Debug_Console
 {
     public class CommandHandler
     {
-        public List<Command> Commands { get; }
-        
         public CommandHandler(params Type[] types)
         {
             Commands = new List<Command>();
             foreach (Type t in types)
+            foreach (MethodInfo info in t.GetMethods(BindingFlags.Static | BindingFlags.Public))
             {
-                foreach (MethodInfo info in t.GetMethods(BindingFlags.Static | BindingFlags.Public))
-                {
-                    if (!Attribute.IsDefined(info, typeof(CommandAttribute))) continue;
-                    var attr = info.GetCustomAttribute<CommandAttribute>();
-                    Commands.Add(new Command(info, attr));
-                }
+                if (!Attribute.IsDefined(info, typeof(CommandAttribute))) continue;
+                var attr = info.GetCustomAttribute<CommandAttribute>();
+                Commands.Add(new Command(info, attr));
             }
         }
 
+        public List<Command> Commands { get; }
+
         /// <summary>
-        /// Copied from the Barotrauma codebase
+        ///     Copied from the Barotrauma codebase
         /// </summary>
         /// <param name="command">The input string to split into parts</param>
         /// <returns>Array of string split on spaces, except when in speech marks</returns>
@@ -67,6 +65,7 @@ namespace Barotrauma_Debug_Console
 
                 if (escape > 0) escape--;
             }
+
             if (!string.IsNullOrWhiteSpace(piece)) commands.Add(piece); //add final piece
             return commands.ToArray();
         }
@@ -81,10 +80,7 @@ namespace Barotrauma_Debug_Console
                 return;
             }
 
-            if (!command.TryRun(split[1..]))
-            {
-                Console.WriteLine("Failed to run command");
-            }
+            if (!command.TryRun(split[1..])) Console.WriteLine("Failed to run command");
         }
 
         public bool TryFindCommand(string name, out Command output)

@@ -6,10 +6,10 @@ namespace Barotrauma_Debug_Console.TabCompletion
     public class Completers
     {
         private static readonly Dictionary<Type, ICompleter> CompleterDictionary = new()
-        {
-            {typeof(bool), new BoolCompleter()}
-        };
-        
+            {
+                {typeof(bool), new BoolCompleter()}
+            };
+
         public static bool TryGetCompleter(Type t, out ICompleter completer)
         {
             if (CompleterDictionary.TryGetValue(t, out ICompleter c))
@@ -17,6 +17,7 @@ namespace Barotrauma_Debug_Console.TabCompletion
                 completer = c;
                 return true;
             }
+
             if (typeof(Enum).IsAssignableFrom(t))
             {
                 completer = new EnumCompleter(t);
@@ -24,6 +25,7 @@ namespace Barotrauma_Debug_Console.TabCompletion
                 CompleterDictionary.Add(t, completer);
                 return true;
             }
+
             completer = null;
             return false;
         }

@@ -6,6 +6,7 @@ namespace Barotrauma_Debug_Console.TabCompletion
     public class EnumCompleter : ICompleter
     {
         private readonly string[] names;
+
         public EnumCompleter(Type e)
         {
             names = Enum.GetNames(e);
