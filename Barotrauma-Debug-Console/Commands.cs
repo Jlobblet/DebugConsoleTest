@@ -22,7 +22,7 @@ namespace Barotrauma_Debug_Console
             Two
         }
 
-        [Command]
+        [Command(aliases: "?")]
         [Help("Display information about all commands")]
         public static void Help(
             [CustomCompleter(typeof(HelpCompleter))] [Help("The name of a command to retrieve help on")]
