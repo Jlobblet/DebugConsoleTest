@@ -25,6 +25,13 @@ namespace Barotrauma_Debug_Console
             var briefHelp = new StringBuilder();
             var help = new StringBuilder();
             briefHelp.Append($"{Name}");
+            if (Aliases.Any())
+            {
+                foreach (string alias in Aliases)
+                {
+                    briefHelp.Append($"/{alias}");
+                }
+            }
             foreach (ParameterInfo parameterInfo in ParameterInfos)
             {
                 char openingBracket = parameterInfo.IsOptional ? '[' : '(';
