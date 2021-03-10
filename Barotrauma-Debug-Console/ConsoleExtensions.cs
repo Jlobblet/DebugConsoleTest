@@ -19,56 +19,55 @@ namespace Barotrauma_Debug_Console
                 {
                     case ConsoleKey.Backspace when (key.Modifiers & ConsoleModifiers.Control) != 0 ||
                                                    (key.Modifiers & ConsoleModifiers.Alt) != 0:
-                        if (!string.IsNullOrEmpty(input))
+                        if (string.IsNullOrEmpty(input)) break;
+                        int index = input.LastIndexOf(' ');
+                        if (index == -1)
                         {
-                            int index = input.LastIndexOf(' ');
-                            if (index == -1)
-                            {
-                                Backspace(input.Length);
-                                lengthToClear += input.Length;
-                                input = "";
-                            }
-                            else
-                            {
-                                Backspace(input.Length - index);
-                                lengthToClear += input.Length - index;
-                                input = input.Substring(0, index);
-                            }
+                            // Only one word - delete everything
+                            Backspace(input.Length);
+                            lengthToClear += input.Length;
+                            input = "";
+                        }
+                        else
+                        {
+                            // Delete last word
+                            Backspace(input.Length - index);
+                            lengthToClear += input.Length - index;
+                            input = input.Substring(0, index);
                         }
 
                         break;
                     case ConsoleKey.Backspace:
-                        if (!string.IsNullOrEmpty(input))
-                        {
-                            input = input.Substring(0, input.Length - 1);
-                            Backspace();
-                            lengthToClear += 2;
-                        }
-
+                        // Delete one character
+                        if (string.IsNullOrEmpty(input)) break;
+                        input = input.Substring(0, input.Length - 1);
+                        Backspace();
+                        lengthToClear += 1;
+                        break;
+                    case ConsoleKey.Delete:
                         break;
                     case ConsoleKey.Tab:
-                        if (!string.IsNullOrEmpty(input) && !input.Contains(' '))
+                        if (string.IsNullOrEmpty(input)) break;
+                        if (!input.Contains(' '))
                         {
-                            if (LookupCommand(input, out string output))
-                            {
-                                Console.Write(output[input.Length..]);
-                                input = output;
-                            }
+                            // We have part of a command name
+                            if (!LookupCommand(input, out string output)) break;
+                            Console.Write(output[input.Length..]);
+                            input = output;
                         }
-                        else if (!string.IsNullOrEmpty(input))
+                        else
                         {
+                            // We need to find the next argument
                             string[] split = CommandHandler.SplitCommand(input);
-                            if (Program.Handler.TryFindCommand(split[0], out Command command))
-                            {
-                                Type currentType = command.ParameterTypes[split.Length - 2];
-                                if (Completers.TryGetCompleter(currentType, out ICompleter c))
-                                    if (c.TryComplete(split[^1], out string completion))
-                                    {
-                                        string rest = completion[split[^1].Length..];
-                                        input += rest;
-                                        Console.Write(rest);
-                                    }
-                            }
+                            if (!Program.Handler.TryFindCommand(split[0], out Command command)) break;
+
+                            Type currentType = command.ParameterTypes[split.Length - 2];
+                            if (!Completers.TryGetCompleter(currentType, out ICompleter c)) break;
+                            if (!c.TryComplete(split[^1], out string completion)) break;
+
+                            string rest = completion[split[^1].Length..];
+                            input += rest;
+                            Console.Write(rest);
                         }
 
                         break;
