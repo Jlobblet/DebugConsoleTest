@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Barotrauma_Debug_Console.TabCompletion;
 
 // ReSharper disable UnusedMember.Global
@@ -7,8 +9,26 @@ namespace Barotrauma_Debug_Console
 {
     public static class Commands
     {
+        [Command]
+        [Help("Display information about all commands")]
+        public static void Help([CustomCompleter(typeof(HelpCompleter))] [Help("The name of a command to retrieve help on")] string command = "")
+        {
+            if (string.IsNullOrEmpty(command))
+            {
+                IEnumerable<string> commands = Program.Handler.Commands.Select(c => c.BriefHelpString);
+                Console.WriteLine(string.Join('\n', commands));    
+            }
+            else
+            {
+                if (!Program.Handler.TryFindCommand(command, out Command com)) return;
+                Console.WriteLine(com.BriefHelpString);
+                Console.WriteLine(com.HelpString);
+            }
+        }
+        
         [Command(aliases: "quit")]
-        public static void Exit(int exitCode = 0)
+        [Help("Exit the program with the specified exit code")]
+        public static void Exit([Help("The exit code to exit with")] int exitCode = 0)
         {
             Environment.Exit(exitCode);
         }
