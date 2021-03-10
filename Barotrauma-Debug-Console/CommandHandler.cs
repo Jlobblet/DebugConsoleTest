@@ -16,7 +16,7 @@ namespace Barotrauma_Debug_Console
             {
                 if (!Attribute.IsDefined(info, typeof(CommandAttribute))) continue;
                 var attr = info.GetCustomAttribute<CommandAttribute>();
-                Commands.Add(new Command(info, attr));
+                Commands.Add(new Command(info, attr!));
             }
         }
 

@@ -89,7 +89,7 @@ namespace Barotrauma_Debug_Console
             }
 
             // Optional parameters
-            for (; i < methodParameters.Length; i++) objects[i] = methodParameters[i].DefaultValue;
+            for (; i < methodParameters.Length; i++) objects[i] = methodParameters[i].DefaultValue!;
 
             info.Invoke(null, objects);
 
