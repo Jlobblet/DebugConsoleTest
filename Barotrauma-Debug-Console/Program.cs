@@ -4,14 +4,15 @@ namespace Barotrauma_Debug_Console
 {
     internal class Program
     {
+        public static readonly CommandHandler Handler = new CommandHandler(typeof(Commands));
+
         private static void Main(string[] args)
         {
-            var handler = new CommandHandler(typeof(Commands));
             while (true)
             {
                 Console.Write("> ");
                 string input = ConsoleExtensions.ReadInput();
-                handler.Handle(input ?? "");
+                Handler.Handle(input ?? "");
             }
         }
     }

@@ -75,12 +75,7 @@ namespace Barotrauma_Debug_Console
         {
             string[] split = SplitCommand(input);
             string name = split[0];
-            Command? command = Commands.Find(c => c.Name.Equals(name,
-                                                                StringComparison.InvariantCultureIgnoreCase)) ??
-                               Commands.Find(c => c.Aliases.Any(n => n.Equals(name,
-                                                                              StringComparison
-                                                                                  .InvariantCultureIgnoreCase)));
-            if (command is null)
+            if (!TryFindCommand(name, out Command command))
             {
                 Console.WriteLine("Could not find command.");
                 return;
@@ -90,6 +85,23 @@ namespace Barotrauma_Debug_Console
             {
                 Console.WriteLine("Failed to run command");
             }
+        }
+
+        public bool TryFindCommand(string name, out Command output)
+        {
+            output = Commands.Find(c => c.Name.Equals(name,
+                                                      StringComparison.InvariantCultureIgnoreCase)) ??
+                     Commands.Find(c => c.Aliases.Any(n => n.Equals(name,
+                                                                    StringComparison
+                                                                        .InvariantCultureIgnoreCase)))!;
+            return output is not null!;
+        }
+
+        public bool SearchCommand(string search, out Command output)
+        {
+            output = Commands.Find(c => c.Name.StartsWith(search, StringComparison.InvariantCultureIgnoreCase)) ??
+                     Commands.Find(c => c.Aliases.Any(n => n.StartsWith(search, StringComparison.InvariantCultureIgnoreCase)))!;
+            return output is not null!;
         }
     }
 }

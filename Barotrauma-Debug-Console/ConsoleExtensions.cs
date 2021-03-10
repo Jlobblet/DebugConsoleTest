@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Linq;
 
@@ -38,6 +39,16 @@ namespace Barotrauma_Debug_Console
                         }
 
                         break;
+                    case ConsoleKey.Tab:
+                        if (!string.IsNullOrEmpty(input) && !input.Contains(' '))
+                        {
+                            if (LookupCommand(input, out string output))
+                            {
+                                Console.Write(output[input.Length..]);
+                                input = output;
+                            }
+                        }
+                        break;
                     default:
                         input += key.KeyChar;
                         Console.Write(key.KeyChar);
@@ -46,6 +57,20 @@ namespace Barotrauma_Debug_Console
             } while (key.Key != ConsoleKey.Enter);
             Console.WriteLine("");
             return input;
+        }
+
+        private static bool LookupCommand(string input, out string output)
+        {
+            if (Program.Handler.SearchCommand(input, out Command command))
+            {
+                output = command.Name.StartsWith(input) ? command.Name : command.Aliases.First(a => a.StartsWith(input));
+                return true;
+            }
+            else
+            {
+                output = "";
+                return false;
+            }
         }
     }
 }
