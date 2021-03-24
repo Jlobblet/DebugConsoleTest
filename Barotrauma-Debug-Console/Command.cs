@@ -9,7 +9,7 @@ namespace Barotrauma_Debug_Console
     public class Command
     {
         public readonly string[] Aliases;
-        private readonly MethodInfo info;
+        public readonly MethodInfo Info;
         public readonly string Name;
         public readonly ParameterInfo[] ParameterInfos;
 
@@ -20,18 +20,14 @@ namespace Barotrauma_Debug_Console
         {
             Name = attr.Name ?? info.Name;
             Aliases = attr.Aliases;
-            this.info = info;
+            this.Info = info;
             ParameterInfos = info.GetParameters();
             var briefHelp = new StringBuilder();
             var help = new StringBuilder();
             briefHelp.Append($"{Name}");
             if (Aliases.Any())
-            {
                 foreach (string alias in Aliases)
-                {
                     briefHelp.Append($"/{alias}");
-                }
-            }
             foreach (ParameterInfo parameterInfo in ParameterInfos)
             {
                 char openingBracket = parameterInfo.IsOptional ? '[' : '(';
@@ -45,55 +41,6 @@ namespace Barotrauma_Debug_Console
 
             BriefHelpString = briefHelp.ToString();
             HelpString = help.ToString();
-        }
-
-        public bool TryRun(params string[] parameters)
-        {
-            ParameterInfo[] methodParameters = info.GetParameters();
-            int min = methodParameters.Count(p => !p.IsOptional),
-                max = methodParameters.Length;
-            if (parameters.Length < min)
-            {
-                Console.WriteLine("Not enough parameters given");
-                return false;
-            }
-
-            if (parameters.Length > max)
-            {
-                Console.WriteLine("Too many parameters given");
-                return false;
-            }
-
-            var objects = new object[methodParameters.Length];
-
-            var i = 0;
-
-            // Required parameters
-            for (; i < parameters.Length; i++)
-            {
-                ParameterInfo param = methodParameters[i];
-                string input = parameters[i];
-                if (!Parsers.TryGetParser(param.ParameterType, out IParser parser))
-                {
-                    Console.WriteLine($"Could not find parser for {param.ParameterType}");
-                    return false;
-                }
-
-                if (!parser.TryParse(input, out object output))
-                {
-                    Console.WriteLine($"Could not parse \"{input}\" as {param.ParameterType}");
-                    return false;
-                }
-
-                objects[i] = output;
-            }
-
-            // Optional parameters
-            for (; i < methodParameters.Length; i++) objects[i] = methodParameters[i].DefaultValue!;
-
-            info.Invoke(null, objects);
-
-            return true;
         }
     }
 }

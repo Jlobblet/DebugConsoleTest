@@ -5,8 +5,8 @@ namespace Barotrauma_Debug_Console.TabCompletion
 {
     public class HelpCompleter : ICompleter
     {
-        private readonly string[] commands = Program.Handler.Commands.Select(c => c.Name).ToArray();
-        private readonly string[] aliases = Program.Handler.Commands.SelectMany(c => c.Aliases).ToArray();
+        private readonly string[] aliases = Program.Commands.CommandList.SelectMany(c => c.Aliases).ToArray();
+        private readonly string[] commands = Program.Commands.CommandList.Select(c => c.Name).ToArray();
 
         public bool TryComplete(string input, out string output)
         {

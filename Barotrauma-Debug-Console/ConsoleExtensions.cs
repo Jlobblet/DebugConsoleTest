@@ -105,8 +105,8 @@ namespace Barotrauma_Debug_Console
         private static bool TryGetRestOfParameter(string input, out string rest)
         {
             rest = "";
-            string[] split = CommandHandler.SplitCommand(input);
-            if (!Program.Handler.TryFindCommand(split[0], out Command command)) return false;
+            string[] split = Commands.SplitCommand(input);
+            if (!Program.Commands.TryFindCommand(split[0], out Command command)) return false;
             int index = split.Length - 2;
             if (index < 0 || index >= command.ParameterInfos.Length) return false;
 
@@ -145,14 +145,14 @@ namespace Barotrauma_Debug_Console
 
         private static bool LookupCommand(string input, out string output)
         {
-            if (Program.Handler.SearchCommand(input, out Command command))
+            if (Program.Commands.SearchCommand(input, out Command command))
             {
                 output = command.Name.StartsWith(input, StringComparison.OrdinalIgnoreCase)
                              ? command.Name
                              : command.Aliases.FirstOrDefault(a => a.StartsWith(input,
                                                                                     StringComparison
                                                                                         .OrdinalIgnoreCase))!;
-                return output is not null;
+                return output is not null!;
             }
 
             output = "";

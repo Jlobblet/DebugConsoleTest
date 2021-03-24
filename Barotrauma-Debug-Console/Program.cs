@@ -4,7 +4,7 @@ namespace Barotrauma_Debug_Console
 {
     internal class Program
     {
-        public static readonly CommandHandler Handler = new(typeof(Commands));
+        public static readonly Commands Commands = new ();
 
         private static void Main(string[] args)
         {
@@ -12,7 +12,7 @@ namespace Barotrauma_Debug_Console
             {
                 Console.Write("> ");
                 string input = ConsoleExtensions.ReadInput();
-                Handler.Handle(input ?? "");
+                Commands.Handle(input);
             }
         }
     }
