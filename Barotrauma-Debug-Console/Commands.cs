@@ -26,7 +26,8 @@ namespace Barotrauma_Debug_Console
 
         public Commands()
         {
-            CommandList = GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
+            CommandList = GetType().GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public |
+                                               BindingFlags.DeclaredOnly)
                                    .Where(m => Attribute.IsDefined(m, typeof(CommandAttribute)))
                                    .Select(m => new Command(m, m.GetCustomAttribute<CommandAttribute>()!))
                                    .ToList();
@@ -170,7 +171,7 @@ namespace Barotrauma_Debug_Console
         {
             if (string.IsNullOrEmpty(command))
             {
-                IEnumerable<string>? helpStrings = CommandList.Select(c => c.BriefHelpString);
+                IEnumerable<string> helpStrings = CommandList.Select(c => c.BriefHelpString);
                 Console.WriteLine(string.Join('\n', helpStrings));
             }
             else
@@ -183,56 +184,56 @@ namespace Barotrauma_Debug_Console
 
         [Command(aliases: "quit")]
         [Help("Exit the program with the specified exit code")]
-        public void Exit([Help("The exit code to exit with")] int exitCode = 0)
+        public static void Exit([Help("The exit code to exit with")] int exitCode = 0)
         {
             Environment.Exit(exitCode);
         }
 
         [Command]
-        public void Foobar(string input)
+        public static void Foobar(string input)
         {
             Console.WriteLine(input);
         }
 
         [Command]
-        public void Double(int input)
+        public static void Double(int input)
         {
             Console.WriteLine(input * 2);
         }
 
         [Command]
-        public void Add(int a, int b)
+        public static void Add(int a, int b)
         {
             Console.WriteLine(a + b);
         }
 
         [Command]
-        public void EnumParse(MyEnum e)
+        public static void EnumParse(MyEnum e)
         {
             Console.WriteLine(e);
         }
 
         [Command]
-        public void AddFloat(float l, float r)
+        public static void AddFloat(float l, float r)
         {
             Console.WriteLine(l + r);
         }
 
         [Command(aliases: "mdoub")]
-        public void MaybeDouble(int i, bool d = false)
+        public static void MaybeDouble(int i, bool d = false)
         {
             Console.WriteLine(i * (d ? 2 : 1));
         }
 
         [Command]
-        public void BaroDev(BarotraumaDeveloper dev)
+        public static void BaroDev(BarotraumaDeveloper dev)
         {
             Console.WriteLine($"Hi {dev}!");
         }
 
         [Command]
-        public void BallastFlora([CustomCompleter(typeof(BallastFloraCompleter))]
-                                 string species)
+        public static void BallastFlora([CustomCompleter(typeof(BallastFloraCompleter))]
+                                        string species)
         {
             Console.WriteLine($"That ballast flora species is also known as {species}.");
         }
